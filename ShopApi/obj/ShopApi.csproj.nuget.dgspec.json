@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\akoz\\AngularTest\\WebShop\\WebApi\\WebShopApi\\ShopApi\\ShopApi.csproj": {}
+    "C:\\Users\\akoz\\AngularTest\\WebShop\\WebShopApi\\ShopApi\\ShopApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\akoz\\AngularTest\\WebShop\\WebApi\\WebShopApi\\ShopApi\\ShopApi.csproj": {
+    "C:\\Users\\akoz\\AngularTest\\WebShop\\WebShopApi\\ShopApi\\ShopApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\akoz\\AngularTest\\WebShop\\WebApi\\WebShopApi\\ShopApi\\ShopApi.csproj",
+        "projectUniqueName": "C:\\Users\\akoz\\AngularTest\\WebShop\\WebShopApi\\ShopApi\\ShopApi.csproj",
         "projectName": "ShopApi",
-        "projectPath": "C:\\Users\\akoz\\AngularTest\\WebShop\\WebApi\\WebShopApi\\ShopApi\\ShopApi.csproj",
+        "projectPath": "C:\\Users\\akoz\\AngularTest\\WebShop\\WebShopApi\\ShopApi\\ShopApi.csproj",
         "packagesPath": "C:\\Users\\akoz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\akoz\\AngularTest\\WebShop\\WebApi\\WebShopApi\\ShopApi\\obj\\",
+        "outputPath": "C:\\Users\\akoz\\AngularTest\\WebShop\\WebShopApi\\ShopApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\akoz\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\akoz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -41,6 +43,26 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[7.0.11, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -66,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
