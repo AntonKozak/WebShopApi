@@ -5,19 +5,19 @@ using ShopApi.Data;
 namespace ShopApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")]
 public class UsersController : ControllerBase
 {
-        private readonly DataContext _context;
+    private readonly DataContext _context;
     public UsersController(DataContext context)
     {
         _context = context;
-    } 
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserModel>>> GetUsers()
     {
-        if(_context.Users.Count() == 0)
+        if (_context.Users.Count() == 0)
         {
             return NotFound();
         }
@@ -26,13 +26,13 @@ public class UsersController : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<ActionResult<UserModel>> GetUserById(int id)
-    {   
-        if(id == 0)
+    {
+        if (id == 0)
         {
             return BadRequest();
         }
         var user = await _context.Users.FindAsync(id);
-        if(user == null)
+        if (user == null)
         {
             return NotFound();
         }
