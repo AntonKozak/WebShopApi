@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Data;
 using ShopApi.DTOs;
+using ShopApi.Interfaces;
+using ShopApi.Services;
 
 namespace ShopApi.Controllers
 {
@@ -12,8 +14,10 @@ namespace ShopApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly DataContext _context;
-        public AccountController(DataContext context)
+        private readonly ITokenService _tokenService;
+        public AccountController(DataContext context, ITokenService tokenService)
         {
+            _tokenService = tokenService;
             _context = context;
         }
 
@@ -40,7 +44,8 @@ namespace ShopApi.Controllers
             _context.Users.Add(user);
             _context.SaveChanges();
             return new UserDto{
-                UserName = user.UserName
+                UserName = user.UserName,
+                Token = _tokenService.CreateToken(user)
             };
         }
 
@@ -63,6 +68,7 @@ namespace ShopApi.Controllers
             }
             return new UserDto{
                 UserName = user.UserName,
+                Token = _tokenService.CreateToken(user)
             };
         }
 
