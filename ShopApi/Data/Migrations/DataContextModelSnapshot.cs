@@ -17,13 +17,58 @@ namespace ShopApi.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
 
+            modelBuilder.Entity("ShopApi.Entities.Cactus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CareInstructions")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Cacti");
+                });
+
+            modelBuilder.Entity("ShopApi.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("ShopApi.Entities.Photo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsMain")
+                    b.Property<int?>("CactusId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("IsMain")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
@@ -32,17 +77,17 @@ namespace ShopApi.Data.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("UserPhotosId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserPhotosId");
+                    b.HasIndex("CactusId");
 
-                    b.ToTable("Photo");
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("ShopApi.UserModel", b =>
@@ -67,7 +112,6 @@ namespace ShopApi.Data.Migrations
                         .HasColumnType("BLOB");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -75,18 +119,43 @@ namespace ShopApi.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ShopApi.Entities.Cactus", b =>
+                {
+                    b.HasOne("ShopApi.Entities.Category", "Category")
+                        .WithMany("Cacti")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("ShopApi.Entities.Photo", b =>
                 {
-                    b.HasOne("ShopApi.UserModel", "UserPhotos")
-                        .WithMany("Photos")
-                        .HasForeignKey("UserPhotosId");
+                    b.HasOne("ShopApi.Entities.Cactus", "Cactus")
+                        .WithMany("PhotosList")
+                        .HasForeignKey("CactusId");
 
-                    b.Navigation("UserPhotos");
+                    b.HasOne("ShopApi.UserModel", "User")
+                        .WithOne("Photo")
+                        .HasForeignKey("ShopApi.Entities.Photo", "UserId");
+
+                    b.Navigation("Cactus");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ShopApi.Entities.Cactus", b =>
+                {
+                    b.Navigation("PhotosList");
+                });
+
+            modelBuilder.Entity("ShopApi.Entities.Category", b =>
+                {
+                    b.Navigation("Cacti");
                 });
 
             modelBuilder.Entity("ShopApi.UserModel", b =>
                 {
-                    b.Navigation("Photos");
+                    b.Navigation("Photo");
                 });
 #pragma warning restore 612, 618
         }

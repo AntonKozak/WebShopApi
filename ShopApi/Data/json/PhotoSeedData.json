@@ -1,0 +1,7 @@
+[
+    {
+        "Id": 1,
+        "Url": "https://api.api-ninjas.com/v1/randomimage?category=nature",
+        "IsMain": true
+      }
+]

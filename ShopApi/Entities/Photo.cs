@@ -1,13 +1,18 @@
 
-namespace ShopApi.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
+namespace ShopApi.Entities;
 public class Photo
 {
     public int Id { get; set; }
     public string? Url { get; set; }
-    public bool IsMain { get; set; }
+    public bool? IsMain { get; set; }
     public string? PublicId { get; set; }
+    public int? CactusId { get; set; }
+    [ForeignKey("CactusId")]
+    public virtual Cactus? Cactus { get; set; }
 
-    public int UserId { get; set; }
-    public UserModel? UserPhotos { get; set; }
+    public int? UserId { get; set; }
+    [ForeignKey("UserId")]
+    public virtual UserModel? User { get; set; }
 }
