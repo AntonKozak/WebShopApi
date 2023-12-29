@@ -32,7 +32,8 @@ try{
     await SeedData.LoadUsersData(context);
     await SeedData.LoadCategoriesData(context);
     await SeedData.LoadCactiData(context);
-    await SeedData.LoadPhotosData(context);
+    await SeedData.LoadUsersPhotosData(context);
+    await SeedData.LoadCactiPhotosData(context);
 }
 catch(Exception ex){
     Console.WriteLine("{0}-{1}", ex.Message, ex.InnerException!.Message);

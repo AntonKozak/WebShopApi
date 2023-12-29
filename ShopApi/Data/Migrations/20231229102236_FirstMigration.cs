@@ -64,7 +64,7 @@ namespace ShopApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Photos",
+                name: "UsersPhotos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -72,21 +72,36 @@ namespace ShopApi.Data.Migrations
                     Url = table.Column<string>(type: "TEXT", nullable: true),
                     IsMain = table.Column<bool>(type: "INTEGER", nullable: true),
                     PublicId = table.Column<string>(type: "TEXT", nullable: true),
-                    CactusId = table.Column<int>(type: "INTEGER", nullable: true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Photos", x => x.Id);
+                    table.PrimaryKey("PK_UsersPhotos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Photos_Cacti_CactusId",
-                        column: x => x.CactusId,
-                        principalTable: "Cacti",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Photos_Users_UserId",
+                        name: "FK_UsersPhotos_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CactusPhotos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Url = table.Column<string>(type: "TEXT", nullable: true),
+                    IsMain = table.Column<bool>(type: "INTEGER", nullable: true),
+                    PublicId = table.Column<string>(type: "TEXT", nullable: true),
+                    CactusId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CactusPhotos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CactusPhotos_Cacti_CactusId",
+                        column: x => x.CactusId,
+                        principalTable: "Cacti",
                         principalColumn: "Id");
                 });
 
@@ -96,22 +111,24 @@ namespace ShopApi.Data.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photos_CactusId",
-                table: "Photos",
+                name: "IX_CactusPhotos_CactusId",
+                table: "CactusPhotos",
                 column: "CactusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photos_UserId",
-                table: "Photos",
-                column: "UserId",
-                unique: true);
+                name: "IX_UsersPhotos_UserId",
+                table: "UsersPhotos",
+                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Photos");
+                name: "CactusPhotos");
+
+            migrationBuilder.DropTable(
+                name: "UsersPhotos");
 
             migrationBuilder.DropTable(
                 name: "Cacti");

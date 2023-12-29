@@ -42,24 +42,7 @@ namespace ShopApi.Data.Migrations
                     b.ToTable("Cacti");
                 });
 
-            modelBuilder.Entity("ShopApi.Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("ShopApi.Entities.Photo", b =>
+            modelBuilder.Entity("ShopApi.Entities.CactusPhoto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -77,17 +60,53 @@ namespace ShopApi.Data.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("CactusId");
+
+                    b.ToTable("CactusPhotos");
+                });
+
+            modelBuilder.Entity("ShopApi.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("ShopApi.Entities.UsersPhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("IsMain")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CactusId");
+                    b.HasIndex("UserId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Photos");
+                    b.ToTable("UsersPhotos");
                 });
 
             modelBuilder.Entity("ShopApi.UserModel", b =>
@@ -128,24 +147,27 @@ namespace ShopApi.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("ShopApi.Entities.Photo", b =>
+            modelBuilder.Entity("ShopApi.Entities.CactusPhoto", b =>
                 {
                     b.HasOne("ShopApi.Entities.Cactus", "Cactus")
-                        .WithMany("PhotosList")
+                        .WithMany("CactusPhotos")
                         .HasForeignKey("CactusId");
 
-                    b.HasOne("ShopApi.UserModel", "User")
-                        .WithOne("Photo")
-                        .HasForeignKey("ShopApi.Entities.Photo", "UserId");
-
                     b.Navigation("Cactus");
+                });
+
+            modelBuilder.Entity("ShopApi.Entities.UsersPhoto", b =>
+                {
+                    b.HasOne("ShopApi.UserModel", "User")
+                        .WithMany("Photos")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("ShopApi.Entities.Cactus", b =>
                 {
-                    b.Navigation("PhotosList");
+                    b.Navigation("CactusPhotos");
                 });
 
             modelBuilder.Entity("ShopApi.Entities.Category", b =>
@@ -155,7 +177,7 @@ namespace ShopApi.Data.Migrations
 
             modelBuilder.Entity("ShopApi.UserModel", b =>
                 {
-                    b.Navigation("Photo");
+                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }

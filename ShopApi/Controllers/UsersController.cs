@@ -1,6 +1,9 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Data;
+using ShopApi.DTOs;
+using ShopApi.Interfaces;
 
 namespace ShopApi.Controllers;
 
@@ -8,35 +11,35 @@ namespace ShopApi.Controllers;
 [Route("api/users")]
 public class UsersController : ControllerBase
 {
-    private readonly DataContext _context;
-    public UsersController(DataContext context)
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+    
+    public UsersController(IUserRepository userRepository, IMapper mapper)
     {
-        _context = context;
+        _mapper = mapper;
+        _userRepository = userRepository;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserModel>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
     {
-        if (_context.Users.Count() == 0)
-        {
-            return NotFound();
-        }
-        return await _context.Users.ToListAsync();
+        var  users = await _userRepository.GetMembersAsync();
+        return Ok(users);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{username}")]
+    public async Task<ActionResult<MemberDto>> GetUserByUserName(string username)
+    {
+        return await _userRepository.GetMemberAsync(username);  
+    }
+
+    [HttpGet("id/{id}")]
     public async Task<ActionResult<UserModel>> GetUserById(int id)
     {
-        if (id == 0)
-        {
-            return BadRequest();
-        }
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
+        var user = await _userRepository.GetUserByIdAsync(id);
         return user;
     }
+
+
 
 }

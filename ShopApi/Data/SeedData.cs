@@ -23,11 +23,11 @@ namespace ShopApi.Data
                 foreach (var user in users)
                 {
                     using var hmac = new HMACSHA512();
-                    
+
                     user.UserName = user.UserName?.ToLower().Trim();
                     user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
                     user.PasswordSalt = hmac.Key;
-                    
+
 
                     context.Users.Add(user);
                 }
@@ -37,6 +37,26 @@ namespace ShopApi.Data
             else
             {
                 Console.WriteLine("No users found");
+            }
+        }
+        public static async Task LoadCactiData(DataContext context)
+        {
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            if (context.Cacti.Any()) return;
+
+            var json = await File.ReadAllTextAsync("Data/json/CactusSeedData.json");
+
+            var cacti = JsonSerializer.Deserialize<List<Cactus>>(json, options);
+
+            if (cacti is not null && cacti.Count > 0)
+            {
+                await context.Cacti.AddRangeAsync(cacti);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                Console.WriteLine("No cacti found");
             }
         }
         public static async Task LoadCategoriesData(DataContext context)
@@ -60,49 +80,47 @@ namespace ShopApi.Data
             }
         }
 
-
-        public static async Task LoadCactiData(DataContext context)
+        public static async Task LoadUsersPhotosData(DataContext context)
         {
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-            if (context.Cacti.Any()) return;
-
-            var json = await File.ReadAllTextAsync("Data/json/CactusSeedData.json");
-
-            var cacti = JsonSerializer.Deserialize<List<Cactus>>(json, options);
-
-            if (cacti is not null && cacti.Count > 0)
-            {
-                await context.Cacti.AddRangeAsync(cacti);
-                await context.SaveChangesAsync();
-            }
-            else
-            {
-                Console.WriteLine("No cacti found");
-            }
-        }
-
-        public static async Task LoadPhotosData(DataContext context)
-        {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
-            if (context.Photos.Any()) return;
+            if (context.UsersPhotos.Any()) return;
 
             var json = await File.ReadAllTextAsync("Data/json/PhotoSeedData.json");
 
-            var photos = JsonSerializer.Deserialize<List<Photo>>(json, options);
+            var usersPhotos = JsonSerializer.Deserialize<List<UsersPhoto>>(json, options);
 
-            if (photos is not null && photos.Count > 0)
+            if (usersPhotos is not null && usersPhotos.Count > 0)
             {
-                await context.Photos.AddRangeAsync(photos);
+                await context.UsersPhotos.AddRangeAsync(usersPhotos);
                 await context.SaveChangesAsync();
             }
             else
             {
-                Console.WriteLine("No photos found");
+                Console.WriteLine("No users photos found");
             }
-            
-    }
+        }
 
-}
+        public static async Task LoadCactiPhotosData(DataContext context)
+        {
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            if (context.CactusPhotos.Any()) return;
+
+            var json = await File.ReadAllTextAsync("Data/json/CactusPhotoSeedData.json");
+
+            var cactiPhotos = JsonSerializer.Deserialize<List<CactusPhoto>>(json, options);
+
+            if (cactiPhotos is not null && cactiPhotos.Count > 0)
+            {
+                await context.CactusPhotos.AddRangeAsync(cactiPhotos);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                Console.WriteLine("No cactuc photos found");
+            }
+        }
+
+    }
 }

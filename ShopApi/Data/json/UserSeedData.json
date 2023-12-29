@@ -1,8 +1,14 @@
 [
   {
     "Id": 1,
-    "UserName": "ExampleUser",
-    "Email": "user@example.com"
+    "UserName": "string",
+    "Email": "string@gmail.com",
+    "Photos": [
+      {
+          "Url": "https://randomuser.me/api/portraits/women/10.jpg",
+          "IsMain": true
+      }
+  ]
   }
 ]
 

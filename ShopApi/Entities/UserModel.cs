@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿
 using ShopApi.Entities;
 namespace ShopApi;
 
 public class UserModel
 {
     public int Id { get; set; }
-    public string? UserName { get; set; }
-    public string? Email { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public byte[]? PasswordHash { get; set; }
-    public byte[]? PasswordSalt { get; set; }
+    public string UserName { get; set; }
+    public string Email { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public byte[] PasswordHash { get; set; }
+    public byte[] PasswordSalt { get; set; }
 
-    public virtual Photo? Photo { get; set; }
+    public ICollection<UsersPhoto> Photos { get; set; }
 }
