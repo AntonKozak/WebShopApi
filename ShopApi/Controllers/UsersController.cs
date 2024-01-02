@@ -1,7 +1,5 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ShopApi.Data;
 using ShopApi.DTOs;
 using ShopApi.Interfaces;
 
@@ -39,7 +37,4 @@ public class UsersController : ControllerBase
         var user = await _userRepository.GetUserByIdAsync(id);
         return user;
     }
-
-
-
 }

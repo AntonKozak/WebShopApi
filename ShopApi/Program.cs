@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Data;
+using ShopApi.Error.Middleware;
 using ShopApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,6 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
 });
-
 
 builder.Services.AddControllers();
 
@@ -22,7 +22,10 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>(); // ExceptionMiddleware is a custom middleware that we created to handle exceptions(errors)
+
 // Seeding to Database
+
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 try{
@@ -36,7 +39,7 @@ try{
     await SeedData.LoadCactiPhotosData(context);
 }
 catch(Exception ex){
-    Console.WriteLine("{0}-{1}", ex.Message, ex.InnerException!.Message);
+    Console.WriteLine("{0}-{1}", ex.Message, ex.InnerException);
 }
 
 // Configure the HTTP request pipeline.
