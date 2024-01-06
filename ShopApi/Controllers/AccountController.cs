@@ -38,6 +38,11 @@ namespace ShopApi.Controllers
             var user = new UserModel
             {
                 UserName = registerDto.UserName?.ToLower(),
+                Email = registerDto.Email,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Country = registerDto.Country,
+                City = registerDto.City,
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password??"password")),
                 PasswordSalt = hmac.Key
             };

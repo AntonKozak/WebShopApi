@@ -48,10 +48,10 @@ namespace ShopApi.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CactusId")
+                    b.Property<int>("CactusId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool?>("IsMain")
+                    b.Property<bool>("IsMain")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
@@ -90,7 +90,7 @@ namespace ShopApi.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool?>("IsMain")
+                    b.Property<bool>("IsMain")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
@@ -99,7 +99,7 @@ namespace ShopApi.Data.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -114,6 +114,12 @@ namespace ShopApi.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");
@@ -151,7 +157,9 @@ namespace ShopApi.Data.Migrations
                 {
                     b.HasOne("ShopApi.Entities.Cactus", "Cactus")
                         .WithMany("CactusPhotos")
-                        .HasForeignKey("CactusId");
+                        .HasForeignKey("CactusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cactus");
                 });
@@ -160,7 +168,9 @@ namespace ShopApi.Data.Migrations
                 {
                     b.HasOne("ShopApi.UserModel", "User")
                         .WithMany("Photos")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
