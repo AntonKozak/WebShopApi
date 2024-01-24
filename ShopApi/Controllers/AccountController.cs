@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Data;
@@ -15,8 +16,10 @@ namespace ShopApi.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
-        public AccountController(DataContext context, ITokenService tokenService)
+        private readonly IMapper _mapper;
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
         {
+            _mapper = mapper;
             _tokenService = tokenService;
             _context = context;
         }
@@ -33,19 +36,20 @@ namespace ShopApi.Controllers
                 return BadRequest("Username is taken");
             }
             
+            var user = _mapper.Map<UserModel>(registerDto);
+
 
             using var hmac = new HMACSHA512();
-            var user = new UserModel
-            {
-                UserName = registerDto.UserName?.ToLower(),
-                Email = registerDto.Email,
-                FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName,
-                Country = registerDto.Country,
-                City = registerDto.City,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password??"password")),
-                PasswordSalt = hmac.Key
-            };
+            
+                user.UserName = registerDto.UserName?.ToLower();
+                user.Email = registerDto.Email;
+                user.FirstName = registerDto.FirstName;
+                user.LastName = registerDto.LastName;
+                user.Country = registerDto.Country;
+                user.City = registerDto.City;
+                user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password??"password"));
+                user.PasswordSalt = hmac.Key;
+            
             _context.Users.Add(user);
             _context.SaveChanges();
             return new UserDto{
@@ -57,7 +61,9 @@ namespace ShopApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDto.UserName);
+            var user = await _context.Users
+            .Include(p => p.Photos)
+            .SingleOrDefaultAsync(x => x.UserName == loginDto.UserName);
             if(user == null)
             {
                 return Unauthorized("Invalid username or password");
@@ -73,7 +79,8 @@ namespace ShopApi.Controllers
             }
             return new UserDto{
                 UserName = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
             };
         }
 

@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using ShopApi.Entities;
 
 namespace ShopApi.DTOs;
 public class RegisterDto

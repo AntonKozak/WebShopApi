@@ -14,5 +14,5 @@ public class UserModel
     public byte[] PasswordHash { get; set; }
     public byte[] PasswordSalt { get; set; }
 
-    public ICollection<UsersPhoto> Photos { get; set; }
+    public ICollection<UsersPhoto> Photos { get; set; } = new List<UsersPhoto>();
 }
