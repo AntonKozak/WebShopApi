@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShopApi.DTOs;
 using ShopApi.Entities;
 using ShopApi.Extensions;
+using ShopApi.Helpers;
 using ShopApi.Interfaces;
 
 namespace ShopApi.Controllers;
@@ -26,9 +27,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams filteringsParams)
     {
-        var  users = await _userRepository.GetMembersAsync();
+        var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+        filteringsParams.CurrentUsername = currentUser.UserName;
+        if(string.IsNullOrEmpty(filteringsParams.Country))
+        {
+            filteringsParams.Country = currentUser.Country;
+        }
+
+        var users = await _userRepository.GetMembersAsync(filteringsParams);
+        Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages));
         return Ok(users);
     }
 

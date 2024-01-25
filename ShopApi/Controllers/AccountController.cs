@@ -80,6 +80,8 @@ namespace ShopApi.Controllers
             return new UserDto{
                 UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
+                Country = user.Country,
+                City = user.City,
                 PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
             };
         }

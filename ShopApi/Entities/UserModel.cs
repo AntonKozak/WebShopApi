@@ -15,4 +15,6 @@ public class UserModel
     public byte[] PasswordSalt { get; set; }
 
     public ICollection<UsersPhoto> Photos { get; set; } = new List<UsersPhoto>();
+    public ICollection<UsersLikes> LikedByUsers { get; set; }
+    public ICollection<UsersLikes> LikedUsers { get; set; }
 }

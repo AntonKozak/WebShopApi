@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.DTOs;
+using ShopApi.Helpers;
 using ShopApi.Interfaces;
 
 namespace ShopApi.Data.Repositories;
@@ -12,7 +13,7 @@ namespace ShopApi.Data.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly DataContext _context;
-        private readonly IMapper _mapper;
+    private readonly IMapper _mapper;
     public UserRepository(DataContext context, IMapper mapper)
     {
         _mapper = mapper;
@@ -44,14 +45,24 @@ public class UserRepository : IUserRepository
         .Where(x => x.UserName == username)
         .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
         .SingleOrDefaultAsync();
-        
+
     }
 
-    public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+    public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
     {
-        return await _context.Users
-        .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-        .ToListAsync();
+        var query = _context.Users.AsQueryable();
+
+        //exclude current user from the list
+        query = query.Where(u => u.UserName != userParams.CurrentUsername);
+
+        
+        // query = query.Where(u => u.Country == filteringsParams.Country);
+        // query = query.Where(u => u.City == filteringsParams.City);
+
+        return await PagedList<MemberDto>.CreateAsync(
+            query.AsNoTracking().ProjectTo<MemberDto>(_mapper.ConfigurationProvider),
+            userParams.PageNumber,
+            userParams.PageSize);
     }
 
     public async Task<UserModel> GetUserByIdAsync(int id)
