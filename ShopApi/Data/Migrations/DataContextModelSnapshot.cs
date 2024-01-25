@@ -84,6 +84,21 @@ namespace ShopApi.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("ShopApi.Entities.UsersLikes", b =>
+                {
+                    b.Property<int>("SourceUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TargerUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("SourceUserId", "TargerUserId");
+
+                    b.HasIndex("TargerUserId");
+
+                    b.ToTable("UsersLikes");
+                });
+
             modelBuilder.Entity("ShopApi.Entities.UsersPhoto", b =>
                 {
                     b.Property<int>("Id")
@@ -164,6 +179,25 @@ namespace ShopApi.Data.Migrations
                     b.Navigation("Cactus");
                 });
 
+            modelBuilder.Entity("ShopApi.Entities.UsersLikes", b =>
+                {
+                    b.HasOne("ShopApi.UserModel", "SourceUser")
+                        .WithMany("LikedUsers")
+                        .HasForeignKey("SourceUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShopApi.UserModel", "TargerUser")
+                        .WithMany("LikedByUsers")
+                        .HasForeignKey("TargerUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("SourceUser");
+
+                    b.Navigation("TargerUser");
+                });
+
             modelBuilder.Entity("ShopApi.Entities.UsersPhoto", b =>
                 {
                     b.HasOne("ShopApi.UserModel", "User")
@@ -187,6 +221,10 @@ namespace ShopApi.Data.Migrations
 
             modelBuilder.Entity("ShopApi.UserModel", b =>
                 {
+                    b.Navigation("LikedByUsers");
+
+                    b.Navigation("LikedUsers");
+
                     b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
