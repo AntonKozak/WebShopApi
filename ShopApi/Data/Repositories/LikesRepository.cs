@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.DTOs;
 using ShopApi.Entities;
+using ShopApi.Helpers;
+using ShopApi.Helpers.FilterParams;
 using ShopApi.Interfaces;
 
 namespace ShopApi.Data.Repositories;
@@ -20,29 +22,31 @@ public class LikesRepository : ILikesRepository
         return await _dataContext.UsersLikes.FindAsync(sourceUserId, targetUserId);
     }
 
-    public async Task<IEnumerable<LikeDto>> GetUserLikes(string predicate, int userId)
+    public async Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams)
     {
         var user = _dataContext.Users.OrderBy(u => u.UserName).AsQueryable();
         var likes = _dataContext.UsersLikes.AsQueryable();
 
-        if(predicate == "liked")
+        if(likesParams.Predicate == "liked")
         {
-            likes = likes.Where(like => like.SourceUserId == userId);
+            likes = likes.Where(like => like.SourceUserId == likesParams.UserId);
             user = likes.Select(like => like.TargetUser);
         }
-        if(predicate == "likedBy")
+        if(likesParams.Predicate == "likedBy")
         {
-            likes = likes.Where(like => like.TargetUserId == userId);
+            likes = likes.Where(like => like.TargetUserId == likesParams.UserId);
             user = likes.Select(like => like.SourceUser);
         }
 
-        return await user.Select(user => new LikeDto
+        var likedUser = user.Select(user => new LikeDto
         {
             UserName = user.UserName,
             PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url,
             City = user.City,
             Country = user.Country
-        }).ToListAsync();
+        });
+
+        return await PagedList<LikeDto>.CreateAsync(likedUser, likesParams.PageNumber, likesParams.PageSize);
     }
 
     public Task<UserModel> GetUserWithLikes(int userId)

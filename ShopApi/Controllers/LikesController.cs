@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ShopApi.DTOs;
 using ShopApi.Entities;
 using ShopApi.Extensions;
+using ShopApi.Helpers;
+using ShopApi.Helpers.FilterParams;
 using ShopApi.Interfaces;
 
 namespace ShopApi.Controllers;
@@ -48,9 +50,13 @@ public class LikesController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes(string predicate)
-    {
-        var users = await _likesRepository.GetUserLikes(predicate, User.GetUserId());
+    public async Task<ActionResult<PagedList<LikeDto>>> GetUserLikes([FromQuery]LikesParams likesParams)
+    {   
+        likesParams.UserId = User.GetUserId();
+        var users = await _likesRepository.GetUserLikes(likesParams);
+        
+        Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages));
+
         return Ok(users);
     }
 }
