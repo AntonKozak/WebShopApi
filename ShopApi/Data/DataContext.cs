@@ -16,7 +16,7 @@ public class DataContext : DbContext
     {
        base.OnModelCreating(modelBuilder);
        modelBuilder.Entity<UsersLikes>()
-           .HasKey(k => new {k.SourceUserId, k.TargerUserId});
+           .HasKey(k => new {k.SourceUserId, k.TargetUserId});
 
         //Anton likes many users
        modelBuilder.Entity<UsersLikes>() 
@@ -27,9 +27,9 @@ public class DataContext : DbContext
         
         //Many users likes Anton
          modelBuilder.Entity<UsersLikes>() 
-              .HasOne(s => s.TargerUser)
+              .HasOne(s => s.TargetUser)
               .WithMany(l => l.LikedByUsers)
-              .HasForeignKey(s => s.TargerUserId)
+              .HasForeignKey(s => s.TargetUserId)
               .OnDelete(DeleteBehavior.NoAction);
        }
     public DataContext(DbContextOptions options) : base(options) { }

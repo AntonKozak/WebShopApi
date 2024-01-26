@@ -19,7 +19,8 @@ public class TokenService : ITokenService
     {
         var Claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.NameId, user.UserName??throw new System.Exception("Username not found. TOKEN SERVICE"))
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
         };
         var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
         var tokenDescriptor = new SecurityTokenDescriptor

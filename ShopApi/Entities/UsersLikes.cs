@@ -9,6 +9,6 @@ public class UsersLikes
 {
     public UserModel SourceUser { get; set; }
     public int SourceUserId { get; set; }
-    public UserModel TargerUser { get; set; }
-    public int TargerUserId { get; set; }
+    public UserModel TargetUser { get; set; }
+    public int TargetUserId { get; set; }
 }

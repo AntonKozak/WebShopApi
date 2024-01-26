@@ -8,11 +8,11 @@ using ShopApi.Data;
 
 #nullable disable
 
-namespace ShopApi.Data.Migrations
+namespace ShopApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231229102236_FirstMigration")]
-    partial class FirstMigration
+    [Migration("20240126110810_LikesUsersCactuses")]
+    partial class LikesUsersCactuses
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,10 +51,10 @@ namespace ShopApi.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CactusId")
+                    b.Property<int>("CactusId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool?>("IsMain")
+                    b.Property<bool>("IsMain")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
@@ -87,13 +87,28 @@ namespace ShopApi.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("ShopApi.Entities.UsersLikes", b =>
+                {
+                    b.Property<int>("SourceUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TargetUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("SourceUserId", "TargetUserId");
+
+                    b.HasIndex("TargetUserId");
+
+                    b.ToTable("UsersLikes");
+                });
+
             modelBuilder.Entity("ShopApi.Entities.UsersPhoto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool?>("IsMain")
+                    b.Property<bool>("IsMain")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
@@ -102,7 +117,7 @@ namespace ShopApi.Data.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -117,6 +132,12 @@ namespace ShopApi.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");
@@ -154,16 +175,39 @@ namespace ShopApi.Data.Migrations
                 {
                     b.HasOne("ShopApi.Entities.Cactus", "Cactus")
                         .WithMany("CactusPhotos")
-                        .HasForeignKey("CactusId");
+                        .HasForeignKey("CactusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cactus");
+                });
+
+            modelBuilder.Entity("ShopApi.Entities.UsersLikes", b =>
+                {
+                    b.HasOne("ShopApi.UserModel", "SourceUser")
+                        .WithMany("LikedUsers")
+                        .HasForeignKey("SourceUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShopApi.UserModel", "TargetUser")
+                        .WithMany("LikedByUsers")
+                        .HasForeignKey("TargetUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("SourceUser");
+
+                    b.Navigation("TargetUser");
                 });
 
             modelBuilder.Entity("ShopApi.Entities.UsersPhoto", b =>
                 {
                     b.HasOne("ShopApi.UserModel", "User")
                         .WithMany("Photos")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -180,6 +224,10 @@ namespace ShopApi.Data.Migrations
 
             modelBuilder.Entity("ShopApi.UserModel", b =>
                 {
+                    b.Navigation("LikedByUsers");
+
+                    b.Navigation("LikedUsers");
+
                     b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618

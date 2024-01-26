@@ -2,20 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShopApi.Data;
 
 #nullable disable
 
-namespace ShopApi.Data.Migrations
+namespace ShopApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240125211134_LikesEntityAdded")]
-    partial class LikesEntityAdded
+    partial class DataContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
@@ -92,12 +89,12 @@ namespace ShopApi.Data.Migrations
                     b.Property<int>("SourceUserId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("TargerUserId")
+                    b.Property<int>("TargetUserId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("SourceUserId", "TargerUserId");
+                    b.HasKey("SourceUserId", "TargetUserId");
 
-                    b.HasIndex("TargerUserId");
+                    b.HasIndex("TargetUserId");
 
                     b.ToTable("UsersLikes");
                 });
@@ -190,15 +187,15 @@ namespace ShopApi.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopApi.UserModel", "TargerUser")
+                    b.HasOne("ShopApi.UserModel", "TargetUser")
                         .WithMany("LikedByUsers")
-                        .HasForeignKey("TargerUserId")
+                        .HasForeignKey("TargetUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("SourceUser");
 
-                    b.Navigation("TargerUser");
+                    b.Navigation("TargetUser");
                 });
 
             modelBuilder.Entity("ShopApi.Entities.UsersPhoto", b =>
