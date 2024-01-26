@@ -17,4 +17,6 @@ public class UserModel
     public ICollection<UsersPhoto> Photos { get; set; } = new List<UsersPhoto>();
     public ICollection<UsersLikes> LikedByUsers { get; set; }
     public ICollection<UsersLikes> LikedUsers { get; set; }
+    public ICollection<Message> MessagesSent { get; set; }
+    public ICollection<Message> MessagesReceived { get; set; }
 }

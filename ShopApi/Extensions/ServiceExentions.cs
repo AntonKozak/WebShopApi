@@ -47,17 +47,14 @@ public static class ServiceExentions
         services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
         services.AddScoped<IPhotoService, PhotoService>();
         services.AddScoped<ILikesRepository, LikesRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
         
         services.AddDbContext<DataContext>(options =>
         {
             options.UseSqlite(config.GetConnectionString("DefaultConnection"));
         });
 
-        // services.AddControllers()
-        //     .AddJsonOptions(options =>
-        //     {
-        //         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-        //     });
+    
         return services;
     }
 }

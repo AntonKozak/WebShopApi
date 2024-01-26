@@ -19,7 +19,6 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 
-
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>(); // ExceptionMiddleware is a custom middleware that we created to handle exceptions(errors)

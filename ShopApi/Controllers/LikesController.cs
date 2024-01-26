@@ -11,7 +11,7 @@ namespace ShopApi.Controllers;
 
 [ApiController]
 [Route("api/likes")]
-public class LikesController : Controller
+public class LikesController : ControllerBase
 {
         private readonly IUserRepository _userRepository;
         private readonly ILikesRepository _likesRepository;
