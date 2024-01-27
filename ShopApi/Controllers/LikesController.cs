@@ -25,8 +25,8 @@ public class LikesController : ControllerBase
     public async Task<ActionResult> AddLike(string username)
     {
         var sourceUserId = User.GetUserId();//return with the id of the user that is logged in
-        var likedUser = await _userRepository.GetUserByUsernameAsync(username);
-        var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);//set likes to the user
+        var likedUser = await _userRepository.GetUserByUsernameAsync(username);//set likes to the user
+        var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);//loged in, current user
 
         if(likedUser == null) return NotFound();
 

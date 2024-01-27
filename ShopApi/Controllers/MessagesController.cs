@@ -4,11 +4,13 @@ using ShopApi.Extensions;
 using ShopApi.DTOs;
 using ShopApi.Entities;
 using ShopApi.Interfaces;
+using ShopApi.Helpers.FilterParams;
+using ShopApi.Helpers;
 
 namespace ShopApi.Controllers;
 
 [ApiController]
-[Route("api/likes")]
+[Route("api/messages")]
 public class MessagesController: ControllerBase
 {
         private readonly IUserRepository _userRepository;
@@ -48,10 +50,27 @@ public class MessagesController: ControllerBase
         
         _messageRepository.AddMessage(message);
 
-        if(await _messageRepository.SaveAllAsync())
-        return Ok(_mapper.Map<MessageDto>(message));
+        if(await _messageRepository.SaveAllAsync()) return Ok(_mapper.Map<MessageDto>(message));
 
         return BadRequest("Failed to send message MessagesController");
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesForUser([FromQuery]MessageParams messageParams)
+    {   
+        messageParams.Username = User.GetUsername();
+        var messages = await _messageRepository.GetMessagesForUser(messageParams);
+
+        Response.AddPaginationHeader(new PaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages));
+
+        return messages;
+    }
+
+    [HttpGet("thread/{username}")]
+    public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string username)
+    {   
+        var currentUsername = User.GetUsername();
+        return Ok(await _messageRepository.GetMessageThread(currentUsername, username));
     }
 
 }
