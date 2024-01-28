@@ -93,7 +93,6 @@ public class MessageRepository : IMessageRepository
                 Console.WriteLine($"Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
             }
 
-            // Attempt to save changes
             return await _context.SaveChangesAsync() > 0;
         }
         catch (Exception ex)
