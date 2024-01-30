@@ -1,18 +1,28 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using ShopApi.Entities;
 
 namespace ShopApi.Data
 {
     public class SeedData
     {
-        public static async Task LoadUsersData(DataContext context)
+        public static async Task LoadUsersData(UserManager<UserModel> userManager, RoleManager<AppRole> roleManager)
         {
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-            if (context.Users.Any()) return;
+            var roles = new List<AppRole>
+            {
+                new AppRole{Name = "Admin"},
+                new AppRole{Name = "Moderator"},
+                new AppRole{Name = "User"}
+            };
+
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(role);   
+            }
+
+            if (userManager.Users.Any()) return;
 
             var json = await File.ReadAllTextAsync("Data/json/UserSeedData.json");
 
@@ -23,16 +33,31 @@ namespace ShopApi.Data
                 foreach (var user in users)
                 {
                     user.UserName = user.UserName?.ToLower().Trim();
-
-                    context.Users.Add(user);
+                    await userManager.CreateAsync(user, "Pa$$w0rd");
+                    await userManager.AddToRoleAsync(user, "User");
                 }
-
-                await context.SaveChangesAsync();
-            }
-            else
+            }else
             {
                 Console.WriteLine("No users found");
             }
+
+            //addink admin user and moderaotor user to run some tests on them 
+            var admin = new UserModel
+            {
+                UserName = "admin"
+            };
+
+            await userManager.CreateAsync(admin, "Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin, new[] { "Admin", "Moderator", "User" });
+
+            var moderator = new UserModel
+            {
+                UserName = "moderator"
+            };
+
+            await userManager.CreateAsync(moderator, "Pa$$w0rd");
+            await userManager.AddToRolesAsync(moderator, new[] { "Moderator", "User" });
+
         }
         public static async Task LoadCactiData(DataContext context)
         {

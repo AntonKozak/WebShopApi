@@ -10,7 +10,7 @@ using ShopApi.Interfaces;
 
 namespace ShopApi.Controllers;
 
-[Authorize]
+[Authorize (Roles = "Admin, Moderator, User")]
 [ApiController]
 [Route("api/users")]
 public class UsersController : ControllerBase

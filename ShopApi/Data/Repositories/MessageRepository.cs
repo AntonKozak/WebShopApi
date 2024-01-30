@@ -40,9 +40,7 @@ public class MessageRepository : IMessageRepository
     {
 
 
-        var query = _context.Messages
-        .OrderByDescending(m => m.MessageSent)
-        .AsQueryable();
+        var query = _context.Messages.AsQueryable();
 
         query = messageParams.Container switch
         {
@@ -53,7 +51,7 @@ public class MessageRepository : IMessageRepository
                                 && u.RecipientDeleted == false
                                 && u.DateRead == null)
         };
-
+        query = query.OrderByDescending(m => m.MessageSent).ThenBy(m => m.Id);
         var messages = query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider);
 
         return await PagedList<MessageDto>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);

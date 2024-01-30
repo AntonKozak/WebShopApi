@@ -1,6 +1,9 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ShopApi;
 using ShopApi.Data;
+using ShopApi.Entities;
 using ShopApi.Error.Middleware;
 using ShopApi.Extensions;
 
@@ -29,9 +32,12 @@ using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 try{
     var context = services.GetRequiredService<DataContext>();
+    var userManager = services.GetRequiredService<UserManager<UserModel>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+
     await context.Database.MigrateAsync();
 
-    await SeedData.LoadUsersData(context);
+    await SeedData.LoadUsersData(userManager, roleManager);
     await SeedData.LoadCategoriesData(context);
     await SeedData.LoadCactiData(context);
     await SeedData.LoadUsersPhotosData(context);

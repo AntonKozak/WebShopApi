@@ -33,12 +33,12 @@ public static class IdentityServiceExtensions
                 };
             });
 
-        // services.AddAuthorization(opt =>
-        // {
-        //     opt.AddPolicy("AdminRole", policy => policy.RequireRole("Admin"));
-        //     opt.AddPolicy("CompanyRole", policy => policy.RequireRole("Company"));
-        //     opt.AddPolicy("UserRole", policy => policy.RequireRole("User"));
-        // });
+        services.AddAuthorization(opt =>
+        {
+            opt.AddPolicy("AdminRole", policy => policy.RequireRole("Admin"));
+            opt.AddPolicy("ModeratorRole", policy => policy.RequireRole("Moderator", "Admin"));
+            opt.AddPolicy("UserRole", policy => policy.RequireRole("User", "Moderator", "Admin"));
+        });
 
         return services;
     }
