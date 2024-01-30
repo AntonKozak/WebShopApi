@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ShopApi.Data;
+using ShopApi.Entities;
 
 namespace ShopApi.Extensions;
 
@@ -12,15 +13,13 @@ public static class IdentityServiceExtensions
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
     {
         
-        // services.AddIdentityCore<UserModel>(opt =>
-        // {
-        //     opt.Password.RequireNonAlphanumeric = false;
-        // })
-        //     .AddRoles<IdentityRole>()
-        //     .AddRoleManager<RoleManager<IdentityRole>>()
-        //     .AddSignInManager<SignInManager<UserModel>>()
-        //     .AddRoleValidator<RoleValidator<IdentityRole>>()
-        //     .AddEntityFrameworkStores<DataContext>();
+        services.AddIdentityCore<UserModel>(opt =>
+        {
+            opt.Password.RequireNonAlphanumeric = false;
+        })
+            .AddRoles<AppRole>()
+            .AddRoleManager<RoleManager<AppRole>>()
+            .AddEntityFrameworkStores<DataContext>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opt =>

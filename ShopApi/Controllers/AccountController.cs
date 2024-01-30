@@ -39,7 +39,6 @@ namespace ShopApi.Controllers
             var user = _mapper.Map<UserModel>(registerDto);
 
 
-            using var hmac = new HMACSHA512();
             
                 user.UserName = registerDto.UserName?.ToLower();
                 user.Email = registerDto.Email;
@@ -47,8 +46,6 @@ namespace ShopApi.Controllers
                 user.LastName = registerDto.LastName;
                 user.Country = registerDto.Country;
                 user.City = registerDto.City;
-                user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password??"password"));
-                user.PasswordSalt = hmac.Key;
             
             _context.Users.Add(user);
             _context.SaveChanges();
@@ -68,15 +65,7 @@ namespace ShopApi.Controllers
             {
                 return Unauthorized("Invalid username or password");
             }
-            using var hmac = new HMACSHA512(user.PasswordSalt??new byte[0]);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password??"password"));
-            for(int i = 0; i < computedHash.Length; i++)
-            {
-                if(computedHash[i] != user.PasswordHash?[i])
-                {
-                    return Unauthorized("Invalid password or username or server error ");
-                }
-            }
+
             return new UserDto{
                 UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
