@@ -56,10 +56,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(x => x
-.AllowAnyOrigin()
 .AllowAnyMethod()
 .AllowCredentials() //for SignalR
-.AllowAnyHeader());
+.AllowAnyHeader()
+.WithOrigins("https://localhost:4200")
+);
 
 // app.UseHttpsRedirection();
 

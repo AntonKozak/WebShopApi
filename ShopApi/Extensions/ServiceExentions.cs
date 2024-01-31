@@ -8,6 +8,7 @@ using ShopApi.Data.Repositories;
 using ShopApi.Helpers;
 using ShopApi.Interfaces;
 using ShopApi.Services;
+using ShopApi.SignalR;
 
 namespace ShopApi.Extensions;
 
@@ -49,6 +50,8 @@ public static class ServiceExentions
         services.AddScoped<ILikesRepository, LikesRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddSignalR();
+        services.AddSingleton<PresenceTracker>();
+
         services.AddDbContext<DataContext>(options =>
         {
             options.UseSqlite(config.GetConnectionString("DefaultConnection"));
