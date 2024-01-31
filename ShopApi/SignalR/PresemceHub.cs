@@ -19,7 +19,7 @@ public class PresemceHub : Hub
 
         var currentUsers = await _tracker.GetOnlineUsers();
 
-        await Clients.All.SendAsync("GetOnlineUsers from On Connected", currentUsers);
+        await Clients.All.SendAsync("GetOnlineUsersFromAPI", currentUsers);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)
@@ -30,7 +30,7 @@ public class PresemceHub : Hub
         await Clients.Others.SendAsync("UserIsOffline", Context.User.GetUsername());
 
         var currentUsers = await _tracker.GetOnlineUsers();
-        await Clients.All.SendAsync("GetOnlineUsers from disconnect", currentUsers);
+        await Clients.All.SendAsync("GetOnlineUsersFromAPI", currentUsers);
         await base.OnDisconnectedAsync(exception);
     }
 }
