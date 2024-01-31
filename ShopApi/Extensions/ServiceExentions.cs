@@ -48,7 +48,7 @@ public static class ServiceExentions
         services.AddScoped<IPhotoService, PhotoService>();
         services.AddScoped<ILikesRepository, LikesRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
-        
+        services.AddSignalR();
         services.AddDbContext<DataContext>(options =>
         {
             options.UseSqlite(config.GetConnectionString("DefaultConnection"));

@@ -6,6 +6,7 @@ using ShopApi.Data;
 using ShopApi.Entities;
 using ShopApi.Error.Middleware;
 using ShopApi.Extensions;
+using ShopApi.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +55,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors(x => x
+.AllowAnyOrigin()
+.AllowAnyMethod()
+.AllowCredentials() //for SignalR
+.AllowAnyHeader());
 
 // app.UseHttpsRedirection();
 
@@ -62,6 +67,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<PresemceHub>("hubs/presence");
 
 app.Run();
