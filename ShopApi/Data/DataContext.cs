@@ -23,6 +23,8 @@ IdentityUserToken<int>
     public DbSet<UsersPhoto> UsersPhotos { get; set; }
     public DbSet<UsersLikes> UsersLikes { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<Connection> Connections { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,5 +1,6 @@
 
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using ShopApi.DTOs;
 using ShopApi.Entities;
@@ -8,6 +9,7 @@ using ShopApi.Interfaces;
 
 namespace ShopApi.SignalR;
 
+[Authorize]
 public class MessageHub : Hub
 {
     private readonly IMessageRepository _messageRepository;
@@ -29,7 +31,7 @@ public class MessageHub : Hub
 
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         var messages = await _messageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
-
+        //use this value "ReceiveMessageThread" in Angular message.service.ts
         await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
     }
 
@@ -63,6 +65,7 @@ public class MessageHub : Hub
         if (await _messageRepository.SaveAllAsync())
         {
             var groupName = GetGroupName(sender.UserName, recipient.UserName);
+            //use this value "NewMessage" in Angular message.service.ts to sent message throw SignalR
             await Clients.Group(groupName).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
         }
     }
