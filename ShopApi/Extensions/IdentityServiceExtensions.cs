@@ -51,7 +51,7 @@ public static class IdentityServiceExtensions
                     }
                 };
             });
-        //adding authorization policies to the services container to be used in the controllers and hubs 
+        //adding authorization policies to the services container to be used in the controllers
         services.AddAuthorization(opt =>
         {
             opt.AddPolicy("AdminRole", policy => policy.RequireRole("Admin"));
