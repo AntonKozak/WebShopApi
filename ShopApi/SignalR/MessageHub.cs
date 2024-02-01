@@ -15,8 +15,10 @@ public class MessageHub : Hub
     private readonly IMessageRepository _messageRepository;
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
-    public MessageHub(IMessageRepository messageRepository, IMapper mapper, IUserRepository userRepository)
+        private readonly IHubContext<PresenceHub> _presenceHub;
+    public MessageHub(IMessageRepository messageRepository, IMapper mapper, IUserRepository userRepository, IHubContext<PresenceHub> presenceHub)
     {
+        _presenceHub = presenceHub;
         _userRepository = userRepository;
         _mapper = mapper;
         _messageRepository = messageRepository;
@@ -68,9 +70,18 @@ public class MessageHub : Hub
         var groupName = GetGroupName(sender.UserName, recipient.UserName);
         var group = await _messageRepository.GetMessageGroup(groupName);
 
+        //if in the group, geting messages
         if (group.Connections.Any(x => x.Username == recipient.UserName))
         {
             message.DateRead = DateTime.UtcNow;
+        }
+        // if not connection, no notifications
+        else{
+            var connections =await PresenceTracker.GetConnectionForUser(recipient.UserName);
+            if(connections != null){
+                //"NewMessageReceived" should match in the angular message.service.ts
+                await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new {username = sender.UserName});
+            }
         }
 
         _messageRepository.AddMessage(message);

@@ -75,7 +75,7 @@ app.UseAuthorization();
 app.MapControllers();
 // hubs building query parameter specifically for requests targeting the "/hubs" path from JwtBearerEvents
 // /presence or /message is the path of the hubs-address
-app.MapHub<PresemceHub>("hubs/presence");
+app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/message");
 
 app.Run();

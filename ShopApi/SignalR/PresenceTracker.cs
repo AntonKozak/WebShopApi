@@ -53,4 +53,19 @@ public class PresenceTracker
         return Task.FromResult(onlineUsers);
     }
 
+    public static Task<List<string>> GetConnectionForUser(string username)
+    {
+        List<string> connectionIds;
+        // make collection asynchonous to avoid blocking the thread
+        // Ensure thread-safe access to the OnlineUsers collection
+    lock (OnlineUsers)
+    {
+        // Retrieve the list of connection IDs associated with the given username
+        // Note: GetValueOrDefault returns null if the username is not found,
+        // so connectionIds could be null if the username is not present
+        connectionIds = OnlineUsers.GetValueOrDefault(username);
+    }
+
+    return Task.FromResult(connectionIds);
+    }
 }

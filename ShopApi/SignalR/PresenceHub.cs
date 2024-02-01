@@ -4,10 +4,10 @@ using ShopApi.Extensions;
 
 namespace ShopApi.SignalR;
 
-public class PresemceHub : Hub
+public class PresenceHub : Hub
 {
     private readonly PresenceTracker _tracker;
-    public PresemceHub(PresenceTracker tracker)
+    public PresenceHub(PresenceTracker tracker)
     {
         _tracker = tracker;
     }
