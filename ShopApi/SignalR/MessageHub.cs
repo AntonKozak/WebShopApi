@@ -15,7 +15,7 @@ public class MessageHub : Hub
     private readonly IMessageRepository _messageRepository;
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
-        private readonly IHubContext<PresenceHub> _presenceHub;
+    private readonly IHubContext<PresenceHub> _presenceHub;
     public MessageHub(IMessageRepository messageRepository, IMapper mapper, IUserRepository userRepository, IHubContext<PresenceHub> presenceHub)
     {
         _presenceHub = presenceHub;
@@ -26,23 +26,29 @@ public class MessageHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        //get user name 
+        // Get the username from the HTTP context 
         var hhtpContext = Context.GetHttpContext();
         var otherUser = hhtpContext.Request.Query["user"].ToString();
+        //We know that users in the same group
+        // Determine the group name => based on user names
         var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
-
+        // Add the connection to the group and
+        // Notify the group about the updated group
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         await AddToGroup(groupName);
-        //we know that users in the same group
 
+        await Clients.Group(groupName).SendAsync("UpdatedGroup", groupName);
+        // Retrieve and send the existing message thread
         var messages = await _messageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
         //use this value "ReceiveMessageThread" in Angular message.service.ts
-        await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
+        await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)
-    {   
-        await RemoveFromMessageGroup();
+    {
+        var group = await RemoveFromMessageGroup();
+        /// should be the same "UpdatedGroup" as in OnConnectedAsync method
+        await Clients.Group(group.Name).SendAsync("UpdatedGroup", group.Name);
         await base.OnDisconnectedAsync(exception);
     }
 
@@ -66,21 +72,23 @@ public class MessageHub : Hub
             Content = createMessageDto.Content
         };
 
-        //get ourgroup name
+        // Determine the group name for the message
         var groupName = GetGroupName(sender.UserName, recipient.UserName);
         var group = await _messageRepository.GetMessageGroup(groupName);
 
-        //if in the group, geting messages
+        // Update message status based on group connections
         if (group.Connections.Any(x => x.Username == recipient.UserName))
         {
             message.DateRead = DateTime.UtcNow;
         }
         // if not connection, no notifications
-        else{
-            var connections =await PresenceTracker.GetConnectionForUser(recipient.UserName);
-            if(connections != null){
+        else
+        {   // Notify the recipient about a new message if not in the group
+            var connections = await PresenceTracker.GetConnectionForUser(recipient.UserName);
+            if (connections != null)
+            {
                 //"NewMessageReceived" should match in the angular message.service.ts
-                await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new {username = sender.UserName});
+                await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new { username = sender.UserName });
             }
         }
 
@@ -95,15 +103,17 @@ public class MessageHub : Hub
     }
 
     private static string GetGroupName(string caller, string other)
-    {   //return boolean value becouse of <0 ; atherwise return int value
+    {   
+        // Determine the group name based on alphabetical order of user names
         var stringCompare = string.CompareOrdinal(caller, other) < 0;
+        //return boolean value becouse of <0 ; atherwise return int value
         return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
     }
 
-    private async Task<bool> AddToGroup(string groupName)
+    private async Task<Group> AddToGroup(string groupName)
     {
         var group = await _messageRepository.GetMessageGroup(groupName);
-        //connection to the group if group exist
+        // Create a new connection with the current user's information
         var connection = new Connection(Context.ConnectionId, Context.User.GetUsername());
 
         if (group == null)
@@ -115,14 +125,20 @@ public class MessageHub : Hub
 
         group.Connections.Add(connection);
 
-        return await _messageRepository.SaveAllAsync();
+        if (await _messageRepository.SaveAllAsync()) return group;
+
+        throw new HubException("Failed to join group");
     }
 
-    private async Task RemoveFromMessageGroup()
+    private async Task<Group> RemoveFromMessageGroup()
     {
-        var connection = await _messageRepository.GetConnection(Context.ConnectionId);
+        var group = await _messageRepository.GetGroupForConnection(Context.ConnectionId);
+        var connection = group.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+
         _messageRepository.RemoveConnection(connection);
-        await _messageRepository.SaveAllAsync();
+        if (await _messageRepository.SaveAllAsync()) return group;
+
+        throw new HubException("Failed to remove from group");
         //remove connection from DB and signalR disconnect self with OnDisconnectedAsync method
     }
 }

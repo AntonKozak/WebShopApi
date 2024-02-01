@@ -13,24 +13,21 @@ public class PresenceHub : Hub
     }
     public override async Task OnConnectedAsync()
     {
-        await _tracker.UserConnected(Context.User.GetUsername(), Context.ConnectionId);
         // all connected users will be able to see this message when a new user connects to the hub 
-        await Clients.Others.SendAsync("UserIsOnline", Context.User.GetUsername());
+        var isOnline = await _tracker.UserConnected(Context.User.GetUsername(), Context.ConnectionId);
+        if(isOnline) await Clients.Others.SendAsync("UserIsOnline", Context.User.GetUsername());
 
         var currentUsers = await _tracker.GetOnlineUsers();
-
-        await Clients.All.SendAsync("GetOnlineUsersFromAPI", currentUsers);
+        await Clients.Caller.SendAsync("GetOnlineUsersFromAPI", currentUsers);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)
     {
-        await _tracker.UserDisconnected(Context.User.GetUsername(), Context.ConnectionId);
-
+        var isOffline = await _tracker.UserDisconnected(Context.User.GetUsername(), Context.ConnectionId);
         // all connected users will be able to see this message when a user disconnects from the hub 
-        await Clients.Others.SendAsync("UserIsOffline", Context.User.GetUsername());
+        // send new list how is online
+        if(isOffline) await Clients.Others.SendAsync("UserIsOffline", Context.User.GetUsername());
 
-        var currentUsers = await _tracker.GetOnlineUsers();
-        await Clients.All.SendAsync("GetOnlineUsersFromAPI", currentUsers);
         await base.OnDisconnectedAsync(exception);
     }
 }
