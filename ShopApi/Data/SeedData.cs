@@ -48,7 +48,7 @@ namespace ShopApi.Data
             };
 
             await userManager.CreateAsync(admin, "Pa$$w0rd");
-            await userManager.AddToRolesAsync(admin, new[] { "Admin", "Moderator", "User" });
+            await userManager.AddToRolesAsync(admin, new[] { "Admin"});
 
             var moderator = new UserModel
             {
@@ -56,7 +56,7 @@ namespace ShopApi.Data
             };
 
             await userManager.CreateAsync(moderator, "Pa$$w0rd");
-            await userManager.AddToRolesAsync(moderator, new[] { "Moderator", "User" });
+            await userManager.AddToRolesAsync(moderator, new[] { "Moderator"});
 
         }
         public static async Task LoadCactiData(DataContext context)

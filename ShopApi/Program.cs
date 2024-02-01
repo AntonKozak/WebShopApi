@@ -31,12 +31,16 @@ app.UseMiddleware<ExceptionMiddleware>(); // ExceptionMiddleware is a custom mid
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
-try{
+try
+{
     var context = services.GetRequiredService<DataContext>();
     var userManager = services.GetRequiredService<UserManager<UserModel>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
 
     await context.Database.MigrateAsync();
+
+    // ExecuteSqlRawAsync keep one connection to same chat in the DB table
+    // await context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [Connections]");
 
     await SeedData.LoadUsersData(userManager, roleManager);
     await SeedData.LoadCategoriesData(context);
@@ -44,7 +48,8 @@ try{
     await SeedData.LoadUsersPhotosData(context);
     await SeedData.LoadCactiPhotosData(context);
 }
-catch(Exception ex){
+catch (Exception ex)
+{
     Console.WriteLine("{0}-{1}", ex.Message, ex.InnerException);
 }
 
