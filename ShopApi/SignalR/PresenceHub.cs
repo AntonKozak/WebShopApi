@@ -25,7 +25,7 @@ public class PresenceHub : Hub
     {
         var isOffline = await _tracker.UserDisconnected(Context.User.GetUsername(), Context.ConnectionId);
         // all connected users will be able to see this message when a user disconnects from the hub 
-        // send new list how is online
+        // send new list who is offline
         if(isOffline) await Clients.Others.SendAsync("UserIsOffline", Context.User.GetUsername());
 
         await base.OnDisconnectedAsync(exception);

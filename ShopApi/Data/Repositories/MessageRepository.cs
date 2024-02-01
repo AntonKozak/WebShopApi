@@ -65,8 +65,6 @@ public class MessageRepository : IMessageRepository
 
     public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
     {
-
-
         var query = _context.Messages.AsQueryable();
 
         query = messageParams.Container switch
@@ -95,7 +93,8 @@ public class MessageRepository : IMessageRepository
             )
             .OrderBy(m => m.MessageSent)
             .AsQueryable();
-
+            
+        //mark as read if they are not read
         var unreadMessages = query.Where(m => m.DateRead == null
             && m.RecipientUsername == currentUserName).ToList();
 
@@ -106,7 +105,6 @@ public class MessageRepository : IMessageRepository
                 message.DateRead = DateTime.UtcNow;
             }
         }
-        await _context.SaveChangesAsync();
 
         return await query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider).ToListAsync();
     }
@@ -114,28 +112,5 @@ public class MessageRepository : IMessageRepository
     public void RemoveConnection(Connection connection)
     {
         _context.Connections.Remove(connection);
-    }
-
-    public async Task<bool> SaveAllAsync()
-    {
-        try
-        {
-            // Output information about entities in the change tracker
-            foreach (var entry in _context.ChangeTracker.Entries())
-            {
-                Console.WriteLine($"Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
-            }
-
-            return await _context.SaveChangesAsync() > 0;
-        }
-        catch (Exception ex)
-        {
-            // Log the exception (you might want to use a logging library or log to a file)
-            Console.WriteLine($"Error saving changes: {ex.Message}");
-            Console.WriteLine(ex.InnerException?.Message);
-
-            // Return false to indicate that changes were not successfully saved
-            return false;
-        }
     }
 }
